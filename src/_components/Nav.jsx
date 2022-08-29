@@ -28,7 +28,7 @@ const Nav = () => {
 		{ name: "Florida Panthers", team_id: 13 },
 		{ name: "Los Angeles Kings", team_id: 26 },
 		{ name: "Minnesota Wild", team_id: 30 },
-		{ name: "Montreal Canadiens", team_id: 8 },
+		{ name: "Montréal Canadiens", team_id: 8 },
 		{ name: "Nashville Predators", team_id: 18 },
 		{ name: "New Jersey Devils", team_id: 1 },
 		{ name: "New York Islanders", team_id: 2 },
@@ -81,6 +81,7 @@ const Nav = () => {
 				<Select
 					styles={{ root: classes.root, label: classes.label }}
 					clearable
+					searchable
 					placeholder="Select Draft Year..."
 					onChange={(e) => {
 						console.log(e);
@@ -88,7 +89,7 @@ const Nav = () => {
 							setters.setDraftYear(e);
 						}
 					}}
-					data={options}
+					data={yearArr.map((year) => year.toString())}
 					transition="scale-y"
 					transitionDuration={220}
 					transitionTimingFunction="ease"
@@ -96,11 +97,14 @@ const Nav = () => {
 				<Select
 					styles={{ root: classes.root, label: classes.label }}
 					clearable
+					searchable
 					placeholder="Select Team..."
 					onChange={(e) => {
+						console.log(e);
+
 						setters.setTeamName(e);
 					}}
-					data={teamOptions}
+					data={teams.map((team) => team.name)}
 					transition="scale-y"
 					transitionDuration={220}
 					transitionTimingFunction="ease"

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { fetchProspects, fetchProspectStats } from "../FetchApi";
 import { DraftContext } from "../DraftContext";
@@ -20,7 +20,8 @@ import { styled } from "@mui/material/styles";
 
 const DraftTable = () => {
 	const { values, setters } = useContext(DraftContext);
-	const [prospectId, setProspectId] = useState(0);
+
+	const refProspectId = useRef(0);
 
 	const {
 		data: draftPicks,
@@ -34,9 +35,11 @@ const DraftTable = () => {
 	let picks = draftPicks;
 	// setters.setPicks(picks);
 
-	// const { data: stats } = useQuery(["stats", prospectId], () =>
-	// 	fetchProspectStats(prospectId)
+	// const { data: stats, refetch } = useQuery(["stats", refProspectId], () =>
+	// 	fetchProspectStats(refProspectId.current)
 	// );
+
+	// console.log(stats);
 
 	// const { data: draftStats } = useQuery(
 	// 	[picks],
@@ -48,32 +51,6 @@ const DraftTable = () => {
 	// 	},
 	// 	{ enabled: !!picks }
 	// );
-
-	// const statsQueries = useQueries({
-	// 	queries:
-	// 		picks?.map((pick) => {
-	// 			// console.log(pick);
-	// 			return {
-	// 				queryKey: ["stat", pick.prospect],
-	// 				queryFn: () => fetchProspectStats(pick.prospect.id)
-	// 			};
-	// 		}) ?? []
-	// });
-
-	// console.log(statsQueries);
-
-	// function App({ users }) {
-	// 	const userQueries = useQueries({
-	// 		queries: users.map((user) => {
-	// 			return {
-	// 				queryKey: ["user", user.id],
-	// 				queryFn: () => fetchUserById(user.id)
-	// 			};
-	// 		})
-	// 	});
-	// }
-
-	// console.log(draftStats);
 
 	const StyledTableCell = styled(TableCell)(({ theme }) => ({
 		[`&.${tableCellClasses.head}`]: {
@@ -117,32 +94,28 @@ const DraftTable = () => {
 
 	const Row = (props) => {
 		const { row } = props;
+
 		const [open, setOpen] = React.useState(false);
 
-		const handleCollapse = () => {
-			// setProspectId(row.prospectId);
-			// console.log(row.prospectId);
-			setOpen(!open);
+		const handleCollapse = (id) => {
+			// open === false ? setOpen(true) refetch(): setOpen(false);
 
-			// setters.setCurrentProspectId(id);
-			// setters.setCurrentProspectId(row.prospectId);
-
-			// setTimeout(() => {
-			// }, 100);
+			if (open === false) {
+				setOpen(true);
+				refProspectId.current = id;
+				// refetch();
+			} else {
+				setOpen(false);
+			}
 		};
-
-		// useEffect(() => {
-		// 	if (open) {
-		// 		setProspectId(row.prospectId);
-		// 	}
-		// }, [open]);
 
 		return (
 			<>
 				<TableRow
 					sx={{ "& > *": { borderBottom: "unset" } }}
 					onClick={() => {
-						handleCollapse();
+						handleCollapse(row.prospectId);
+						// console.log(refProspectId.current);
 					}}>
 					<TableCell>
 						<IconButton aria-label="expand row" size="small">
@@ -163,9 +136,17 @@ const DraftTable = () => {
 								<Typography variant="h6" gutterBottom component="div">
 									{`${row.prospectName} Stats`}
 								</Typography>
-								<div>{fetchProspectStats(row.prospectId)}</div>
+								{/* <div>{fetchProspectStats(row.prospectId)}</div> */}
 							</Box>
 						</Collapse>
+						{/* <Accordion>
+							<Box sx={{ margin: 1 }}>
+								<Typography variant="h6" gutterBottom component="div">
+									{`${row.prospectName} Stats`}
+								</Typography>
+								<div>{fetchProspectStats(row.prospectId)}</div>
+							</Box>
+						</Accordion> */}
 					</TableCell>
 				</TableRow>
 			</>
@@ -178,7 +159,7 @@ const DraftTable = () => {
 			overAll: PropTypes.number.isRequired,
 			teamName: PropTypes.string.isRequired,
 			prospectName: PropTypes.string.isRequired,
-			prospectId: PropTypes.number.isRequired,
+			prospectId: PropTypes.number,
 			stats: PropTypes.object
 		})
 	};
@@ -206,8 +187,8 @@ const DraftTable = () => {
 					</StyledTableRow>
 				</TableHead>
 				<TableBody>
-					{rows.map((row) => (
-						<Row className="that" key={row.name} row={row} />
+					{rows.map((row, index) => (
+						<Row className="that" key={index} row={row} />
 					))}
 				</TableBody>
 			</Table>

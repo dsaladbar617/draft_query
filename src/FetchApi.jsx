@@ -7,14 +7,12 @@ const fetchProspects = async (year, teamName) => {
 
 	let drafted = draft.drafts[0].rounds.map((round) => round.picks).flat(2);
 
-	return !teamName || teamName === "None"
+	return !teamName
 		? drafted
 		: drafted.filter((draft) => draft.team.name === teamName);
 };
 
 const fetchProspectStats = async (id) => {
-	// let arr = idArr.map((pick) => pick.prospect.id);
-
 	// console.log(id);
 	if (id != 0) {
 		const data = await axios.get(
