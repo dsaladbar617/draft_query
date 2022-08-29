@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import fetchProspects from "../FetchApi";
+import React, { useContext, useEffect, useState } from "react";
+import { useQuery, useQueries } from "@tanstack/react-query";
+import { fetchProspects, fetchProspectStats } from "../FetchApi";
 import { DraftContext } from "../DraftContext";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
@@ -22,10 +22,58 @@ const DraftTable = () => {
 	const { values, setters } = useContext(DraftContext);
 	const [prospectId, setProspectId] = useState(0);
 
-	const { data, error, isError, isLoading } = useQuery(
-		["prospects", values.draftYear, values.teamName],
-		() => fetchProspects(values.draftYear, values.teamName)
+	const {
+		data: draftPicks,
+		error,
+		isError,
+		isLoading
+	} = useQuery(["prospects", values.draftYear, values.teamName], () =>
+		fetchProspects(values.draftYear, values.teamName)
 	);
+
+	let picks = draftPicks;
+	// setters.setPicks(picks);
+
+	// const { data: stats } = useQuery(["stats", prospectId], () =>
+	// 	fetchProspectStats(prospectId)
+	// );
+
+	// const { data: draftStats } = useQuery(
+	// 	[picks],
+	// 	// [picks?.map((pick) => pick.prospect.id)],
+	// 	(prospId) => {
+	// 		// console.log(prospId.queryKey);
+	// 		// prospId.queryKey.map((pick) => fetchProspectStats(pick.prospect.id));
+	// 		fetchProspectStats(prospId.queryKey[0]);
+	// 	},
+	// 	{ enabled: !!picks }
+	// );
+
+	// const statsQueries = useQueries({
+	// 	queries:
+	// 		picks?.map((pick) => {
+	// 			// console.log(pick);
+	// 			return {
+	// 				queryKey: ["stat", pick.prospect],
+	// 				queryFn: () => fetchProspectStats(pick.prospect.id)
+	// 			};
+	// 		}) ?? []
+	// });
+
+	// console.log(statsQueries);
+
+	// function App({ users }) {
+	// 	const userQueries = useQueries({
+	// 		queries: users.map((user) => {
+	// 			return {
+	// 				queryKey: ["user", user.id],
+	// 				queryFn: () => fetchUserById(user.id)
+	// 			};
+	// 		})
+	// 	});
+	// }
+
+	// console.log(draftStats);
 
 	const StyledTableCell = styled(TableCell)(({ theme }) => ({
 		[`&.${tableCellClasses.head}`]: {
@@ -46,8 +94,6 @@ const DraftTable = () => {
 			border: 0
 		}
 	}));
-
-	let picks = data;
 
 	if (isLoading) {
 		return <div>Loading...</div>;
@@ -77,22 +123,29 @@ const DraftTable = () => {
 			// setProspectId(row.prospectId);
 			// console.log(row.prospectId);
 			setOpen(!open);
-			setters.setCurrentProspectId(row.prospectId);
+
+			// setters.setCurrentProspectId(id);
+			// setters.setCurrentProspectId(row.prospectId);
 
 			// setTimeout(() => {
 			// }, 100);
 		};
 
+		// useEffect(() => {
+		// 	if (open) {
+		// 		setProspectId(row.prospectId);
+		// 	}
+		// }, [open]);
+
 		return (
 			<>
-				<TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+				<TableRow
+					sx={{ "& > *": { borderBottom: "unset" } }}
+					onClick={() => {
+						handleCollapse();
+					}}>
 					<TableCell>
-						<IconButton
-							aria-label="expand row"
-							size="small"
-							onClick={() => {
-								handleCollapse();
-							}}>
+						<IconButton aria-label="expand row" size="small">
 							{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 						</IconButton>
 					</TableCell>
@@ -110,7 +163,7 @@ const DraftTable = () => {
 								<Typography variant="h6" gutterBottom component="div">
 									{`${row.prospectName} Stats`}
 								</Typography>
-								{/* Add the player stats here */}
+								<div>{fetchProspectStats(row.prospectId)}</div>
 							</Box>
 						</Collapse>
 					</TableCell>

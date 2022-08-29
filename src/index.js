@@ -7,15 +7,15 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DraftProvider } from "./DraftContext";
 
 const queryClient = new QueryClient({
-	// defaultOptions: {
-	// 	queries: {
-	// 		refetchOnWindowFocus: false,
-	// 		refetchOnmount: false,
-	// 		refetchOnReconnect: false,
-	// 		retry: false,
-	// 		staleTime: 5 * 60 * 1000
-	// 	}
-	// }
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+			refetchOnmount: false,
+			refetchOnReconnect: false,
+			retry: false,
+			staleTime: 5 * 60 * 1000
+		}
+	}
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
