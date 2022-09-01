@@ -27,3 +27,5 @@ root.render(
 		</QueryClientProvider>
 	</DraftProvider>
 );
+
+export { queryClient };
